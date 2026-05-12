@@ -1,0 +1,15 @@
+kind = "web"
+previewPath = "/"
+title = "Local"
+version = "1.0.0"
+
+[[services]]
+localPort = 8080
+name = "Local"
+paths = ["/"]
+
+[services.development]
+run = "node src/index.js"
+
+[services.development.env]
+PORT = "8080"
