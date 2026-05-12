@@ -377,20 +377,25 @@ const TIPS = [
   "W rizz","cooked fr fr","undefeated","real ones know",
 ];
 
-const tipsContainer = document.getElementById("floating-tips");
+// Ticker above buttons
+const tipsWord = document.getElementById("tips-word");
+let tipIndex = Math.floor(Math.random() * TIPS.length);
 
-function spawnTip() {
-  const tip = document.createElement("div");
-  tip.className = "floating-tip";
-  tip.textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
-  tip.style.left = Math.random() * 78 + 5 + "%";
-  tipsContainer.appendChild(tip);
-  setTimeout(() => tip.remove(), 7500);
+function cycleTip() {
+  tipsWord.classList.add("tip-out");
+  setTimeout(() => {
+    tipIndex = (tipIndex + 1) % TIPS.length;
+    tipsWord.textContent = TIPS[tipIndex];
+    tipsWord.classList.remove("tip-out");
+    // Re-trigger tipIn by forcing reflow
+    void tipsWord.offsetWidth;
+    tipsWord.style.animation = "none";
+    void tipsWord.offsetWidth;
+    tipsWord.style.animation = "";
+  }, 350);
 }
 
-setInterval(spawnTip, 4000);
-setTimeout(spawnTip, 1500);
-setTimeout(spawnTip, 3500);
+setInterval(cycleTip, 2800);
 
 // ============================
 // APPLY SAVED SETTINGS (must be last)
