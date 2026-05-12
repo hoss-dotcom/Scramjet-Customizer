@@ -61,8 +61,6 @@ function setGameUrl(index, url) {
 // STATE
 // ============================
 
-let currentGameIndex = null;
-const urls = getGameUrls();
 
 // ============================
 // RENDER GAMES GRID
@@ -89,58 +87,17 @@ function renderGrid() {
         <div class="game-card-name">${name}</div>
         <div class="game-card-status">${hasUrl ? "▶ Ready to play" : "No URL set"}</div>
       </div>
-      <button class="game-edit-btn" data-index="${i}">✏️</button>
     `;
 
-    // Click card → open edit modal
-    card.addEventListener("click", (e) => {
-      if (e.target.closest(".game-edit-btn")) return;
-      openEditModal(i);
-    });
-
-    // Edit button
-    card.querySelector(".game-edit-btn").addEventListener("click", (e) => {
-      e.stopPropagation();
-      openEditModal(i);
+    card.addEventListener("click", () => {
+      const u = getGameUrls()[i];
+      if (u) window.open(u, "_blank");
     });
 
     grid.appendChild(card);
   });
 }
 
-// ============================
-// EDIT URL MODAL
-// ============================
-
-function openEditModal(index) {
-  currentGameIndex = index;
-  const modal = document.getElementById("edit-modal");
-  const input = document.getElementById("game-url-input");
-  input.value = getGameUrls()[index] || "";
-  modal.classList.remove("hidden");
-  setTimeout(() => input.focus(), 80);
-}
-
-function closeEditModal() {
-  document.getElementById("edit-modal").classList.add("hidden");
-}
-
-document.getElementById("cancel-url-btn").addEventListener("click", closeEditModal);
-
-document.getElementById("save-url-btn").addEventListener("click", () => {
-  const url = document.getElementById("game-url-input").value.trim();
-  if (currentGameIndex === null) return;
-
-  setGameUrl(currentGameIndex, url);
-  renderGrid();
-  closeEditModal();
-});
-
-// Enter/Escape key in modal
-document.getElementById("game-url-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") document.getElementById("save-url-btn").click();
-  if (e.key === "Escape") closeEditModal();
-});
 
 // ============================
 // FLOATING TIPS
