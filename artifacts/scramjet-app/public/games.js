@@ -206,11 +206,7 @@ document.addEventListener("keydown", (e) => {
 // ============================
 
 const TIPS = [
-  "im the goat 🐐","fr fr no cap","stay vibin ✨","W moment 🏆",
-  "lowkey based","sheeeesh 🔥","big brain energy 🧠","understood the assignment",
-  "goated with the sauce 🐐","hits different","certified goat","no cap on top",
-  "main character energy ✨","slay 💅","that's bussin","living rent free 😭",
-  "era unlocked 🔓","ate and left no crumbs","on god fr","we stay winning 🏆",
+  "boiiiiiiii",
 ];
 
 const tipsContainer = document.getElementById("floating-tips");

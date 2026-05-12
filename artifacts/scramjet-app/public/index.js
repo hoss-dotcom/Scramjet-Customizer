@@ -368,13 +368,9 @@ loadSearchEngine();
 // ============================
 
 const TIPS = [
-  "im the goat 🐐","fr fr no cap","stay vibin ✨","W moment 🏆",
-  "lowkey based","sheeeesh 🔥","big brain energy 🧠","understood the assignment",
-  "goated with the sauce 🐐","hits different","certified goat","no cap on top",
-  "main character energy ✨","slay 💅","that's bussin","living rent free 😭",
-  "era unlocked 🔓","ate and left no crumbs","on god fr","we stay winning 🏆",
-  "not me being the GOAT","it's giving","rizz check ✅","lowkey a legend",
-  "W rizz","cooked fr fr","undefeated","real ones know",
+  "better then someone elses webstie","bruh moment",
+  "lowkey ","am i friggin tuff","jow mama","oh heck nah mr escobar",
+  "locked and loaded dudee","lowkey though",
 ];
 
 // Ticker above buttons
