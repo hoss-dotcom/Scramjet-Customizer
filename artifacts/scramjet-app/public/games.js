@@ -14,7 +14,7 @@ document.documentElement.setAttribute("data-theme", savedTheme);
 const GAME_ICONS = ["🎮","👾","🕹️","⚔️","🏆","🎯","🧩","🚀","🐉","⚡","💎","🌟","🔥","🌊","🦅","🤖","🦁","🏹","🎲","🧙"];
 
 const GAME_NAMES = [
-  "Pixel Dash","Neon Runner","Space Blaster","Dragon Quest","Tower Defense",
+  "FNAE","Neon Runner","Space Blaster","Dragon Quest","Tower Defense",
   "Puzzle Master","Speed Racer","Zombie Slayer","Castle Siege","Ocean Explorer",
   "Sky Warriors","Dungeon Crawler","Battle Royale","Word Wizard","Block Builder",
   "Snake Classic","Pac Arena","Tetris Pro","Flappy Jump","Endless Runner",
@@ -42,7 +42,7 @@ const GAME_NAMES = [
 // ============================
 
 const GAME_URLS = [
-  /* 00 Pixel Dash       */ "",
+  /* 00 Pixel Dash       */ "https://fnae.n1yshi.dev/",
   /* 01 Neon Runner      */ "",
   /* 02 Space Blaster    */ "",
   /* 03 Dragon Quest     */ "",
@@ -176,13 +176,35 @@ function renderGrid() {
     `;
 
     card.addEventListener("click", () => {
-      if (url) window.open(url, "_blank");
+      if (url) openGame(name, url);
     });
 
     grid.appendChild(card);
   });
 }
 
+// ============================
+// GAME OVERLAY
+// ============================
+
+function openGame(name, url) {
+  document.getElementById("overlay-game-title").textContent = name;
+  document.getElementById("game-frame").src = url;
+  document.getElementById("game-overlay").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeGame() {
+  document.getElementById("game-frame").src = "about:blank";
+  document.getElementById("game-overlay").classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("game-close-btn").addEventListener("click", closeGame);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeGame();
+});
 
 // ============================
 // FLOATING TIPS
