@@ -1,64 +1,400 @@
 "use strict";
-/**
- * @type {HTMLFormElement}
- */
-const form = document.getElementById("sj-form");
-/**
- * @type {HTMLInputElement}
- */
-const address = document.getElementById("sj-address");
-/**
- * @type {HTMLInputElement}
- */
-const searchEngine = document.getElementById("sj-search-engine");
-/**
- * @type {HTMLParagraphElement}
- */
-const error = document.getElementById("sj-error");
-/**
- * @type {HTMLPreElement}
- */
-const errorCode = document.getElementById("sj-error-code");
+
+// ============================
+// PARTICLE CANVAS (declared first so initParticles works everywhere)
+// ============================
+
+const canvas = document.getElementById("particle-canvas");
+const ctx = canvas.getContext("2d");
+let particles = [];
+let animId = null;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+const THEME_PARTICLE_COLOR = {
+  snow:   [137, 212, 245],
+  neon:   [255, 0, 255],
+  sunset: [255, 107, 53],
+  ocean:  [0, 180, 216],
+  forest: [76, 175, 80],
+};
+
+function makeParticle(theme) {
+  const isOcean = theme === "ocean";
+  return {
+    x: Math.random() * canvas.width,
+    y: isOcean ? canvas.height + 10 : -10,
+    size: Math.random() * 3.5 + 1,
+    speedY: isOcean ? -(Math.random() * 1.2 + 0.4) : (Math.random() * 1.4 + 0.4),
+    speedX: (Math.random() - 0.5) * 0.7,
+    opacity: Math.random() * 0.6 + 0.25,
+    drift: Math.random() * Math.PI * 2,
+    driftSpeed: Math.random() * 0.018 + 0.005,
+  };
+}
+
+function initParticles(theme) {
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  particles = [];
+
+  const counts = { snow: 90, neon: 45, sunset: 30, ocean: 35, forest: 28 };
+  const count = counts[theme] || 0;
+
+  for (let i = 0; i < count; i++) {
+    const p = makeParticle(theme);
+    p.y = Math.random() * canvas.height;
+    particles.push(p);
+  }
+
+  if (count > 0) animateParticles(theme);
+}
+
+function animateParticles(theme) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const [r, g, b] = THEME_PARTICLE_COLOR[theme] || [255, 255, 255];
+  const isOcean = theme === "ocean";
+
+  particles.forEach((p, i) => {
+    p.drift += p.driftSpeed;
+    p.x += Math.sin(p.drift) * 0.6 + p.speedX;
+    p.y += p.speedY;
+
+    ctx.save();
+    ctx.globalAlpha = p.opacity;
+
+    if (theme === "neon") {
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = `rgb(${r},${g},${b})`;
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (isOcean) {
+      ctx.strokeStyle = `rgba(${r},${g},${b},${p.opacity})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size + 1, 0, Math.PI * 2);
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = `rgba(${r},${g},${b},${p.opacity})`;
+      ctx.shadowBlur = theme === "snow" ? 4 : 0;
+      ctx.shadowColor = `rgb(${r},${g},${b})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+
+    const gone = isOcean
+      ? p.y < -10
+      : p.y > canvas.height + 10 || p.x < -20 || p.x > canvas.width + 20;
+    if (gone) {
+      particles[i] = makeParticle(theme);
+      particles[i].x = Math.random() * canvas.width;
+    }
+  });
+
+  animId = requestAnimationFrame(() => animateParticles(theme));
+}
+
+// ============================
+// SCRAMJET SETUP
+// ============================
 
 const { ScramjetController } = $scramjetLoadController();
 
 const scramjet = new ScramjetController({
-	files: {
-		wasm: "/scram/scramjet.wasm.wasm",
-		all: "/scram/scramjet.all.js",
-		sync: "/scram/scramjet.sync.js",
-	},
+  files: {
+    wasm: "/scram/scramjet.wasm.wasm",
+    all: "/scram/scramjet.all.js",
+    sync: "/scram/scramjet.sync.js",
+  },
 });
 
 scramjet.init();
 
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
 
-form.addEventListener("submit", async (event) => {
-	event.preventDefault();
+let activeFrame = null;
 
-	try {
-		await registerSW();
-	} catch (err) {
-		error.textContent = "Failed to register service worker.";
-		errorCode.textContent = err.toString();
-		throw err;
-	}
+// ============================
+// PROXY LAUNCHER
+// ============================
 
-	const url = search(address.value, searchEngine.value);
+async function launchProxy(url) {
+  const overlay = document.getElementById("proxy-overlay");
+  const errorEl = document.getElementById("sj-error");
+  const errorCode = document.getElementById("sj-error-code");
 
-	let wispUrl =
-		(location.protocol === "https:" ? "wss" : "ws") +
-		"://" +
-		location.host +
-		"/wisp/";
-	if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
-		await connection.setTransport("/libcurl/index.mjs", [
-			{ websocket: wispUrl },
-		]);
-	}
-	const frame = scramjet.createFrame();
-	frame.frame.id = "sj-frame";
-	document.body.appendChild(frame.frame);
-	frame.go(url);
+  errorEl.textContent = "";
+  errorCode.textContent = "";
+
+  try {
+    await registerSW();
+  } catch (err) {
+    errorEl.textContent = "Failed to register service worker: " + err.message;
+    return;
+  }
+
+  const wispUrl =
+    (location.protocol === "https:" ? "wss" : "ws") +
+    "://" + location.host + "/wisp/";
+
+  if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
+    await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+  }
+
+  if (activeFrame) {
+    try { activeFrame.frame.remove(); } catch (e) {}
+    activeFrame = null;
+  }
+
+  overlay.classList.remove("hidden");
+  const frame = scramjet.createFrame();
+  frame.frame.id = "sj-frame";
+  overlay.appendChild(frame.frame);
+  activeFrame = frame;
+  frame.go(url);
+}
+
+function closeProxy() {
+  const overlay = document.getElementById("proxy-overlay");
+  if (activeFrame) {
+    try { activeFrame.frame.remove(); } catch (e) {}
+    activeFrame = null;
+  }
+  overlay.classList.add("hidden");
+}
+
+// ============================
+// SEARCH FORM
+// ============================
+
+const form = document.getElementById("sj-form");
+const address = document.getElementById("sj-address");
+const searchEngine = document.getElementById("sj-search-engine");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const val = address.value.trim();
+  if (!val) return;
+  await launchProxy(search(val, searchEngine.value));
 });
+
+document.getElementById("proxy-close").addEventListener("click", closeProxy);
+
+// ============================
+// MUSIC & MOVIES
+// ============================
+
+document.getElementById("music-btn").addEventListener("click", async () => {
+  await launchProxy("https://monochrome.tf");
+});
+
+document.getElementById("movies-btn").addEventListener("click", async () => {
+  await launchProxy("https://toustream.xyz");
+});
+
+// ============================
+// CLOCK
+// ============================
+
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, "0");
+  const m = String(now.getMinutes()).padStart(2, "0");
+  const s = String(now.getSeconds()).padStart(2, "0");
+  document.getElementById("clock-time").textContent = `${h}:${m}:${s}`;
+
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById("clock-date").textContent =
+    `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+// ============================
+// WEATHER
+// ============================
+
+const WMO = {
+  0:["☀️","Clear"],1:["🌤️","Mostly Clear"],2:["⛅","Partly Cloudy"],
+  3:["☁️","Overcast"],45:["🌫️","Foggy"],48:["🌫️","Icy Fog"],
+  51:["🌦️","Light Drizzle"],53:["🌦️","Drizzle"],55:["🌧️","Heavy Drizzle"],
+  61:["🌧️","Light Rain"],63:["🌧️","Rain"],65:["🌧️","Heavy Rain"],
+  71:["🌨️","Light Snow"],73:["🌨️","Snow"],75:["❄️","Heavy Snow"],
+  80:["🌦️","Showers"],81:["🌧️","Heavy Showers"],95:["⛈️","Thunderstorm"],
+  96:["⛈️","Storm w/ Hail"],99:["⛈️","Heavy Storm"],
+};
+
+async function fetchWeather() {
+  try {
+    const locRes = await fetch("https://ipapi.co/json/");
+    const loc = await locRes.json();
+    const { latitude, longitude } = loc;
+    const wRes = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&temperature_unit=fahrenheit`
+    );
+    const w = await wRes.json();
+    const { temperature_2m, weathercode } = w.current;
+    const info = WMO[weathercode] || ["🌡️", "Unknown"];
+    document.getElementById("weather-icon").textContent = info[0];
+    document.getElementById("weather-temp").textContent = `${Math.round(temperature_2m)}°F`;
+    document.getElementById("weather-desc").textContent = info[1];
+  } catch {
+    document.getElementById("weather-icon").textContent = "🌡️";
+    document.getElementById("weather-desc").textContent = "Unavailable";
+    document.getElementById("weather-temp").textContent = "--°F";
+  }
+}
+
+fetchWeather();
+
+// ============================
+// SETTINGS PANEL
+// ============================
+
+const settingsBtn = document.getElementById("settings-btn");
+const settingsOverlay = document.getElementById("settings-overlay");
+const settingsClose = document.getElementById("settings-close");
+
+settingsBtn.addEventListener("click", () =>
+  settingsOverlay.classList.toggle("hidden")
+);
+settingsClose.addEventListener("click", () =>
+  settingsOverlay.classList.add("hidden")
+);
+settingsOverlay.addEventListener("click", (e) => {
+  if (e.target === settingsOverlay) settingsOverlay.classList.add("hidden");
+});
+
+// ============================
+// THEMES
+// ============================
+
+const THEME_KEY = "local-theme";
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(THEME_KEY, theme);
+  document.querySelectorAll(".theme-btn").forEach((btn) =>
+    btn.classList.toggle("active", btn.dataset.theme === theme)
+  );
+  initParticles(theme);
+}
+
+document.querySelectorAll(".theme-btn").forEach((btn) =>
+  btn.addEventListener("click", () => applyTheme(btn.dataset.theme))
+);
+
+// ============================
+// TAB CLOAK
+// ============================
+
+const CLOAK_KEY = "local-cloak";
+
+function applyCloak(title, favicon) {
+  if (title) document.title = title;
+  if (favicon) document.getElementById("favicon-link").href = favicon;
+}
+
+function loadCloak() {
+  try {
+    const c = JSON.parse(localStorage.getItem(CLOAK_KEY));
+    if (c) {
+      applyCloak(c.title, c.favicon);
+      document.getElementById("cloak-title").value = c.title || "";
+      document.getElementById("cloak-favicon").value = c.favicon || "";
+    }
+  } catch {}
+}
+
+document.getElementById("apply-cloak").addEventListener("click", () => {
+  const title = document.getElementById("cloak-title").value.trim();
+  const favicon = document.getElementById("cloak-favicon").value.trim();
+  applyCloak(title, favicon);
+  localStorage.setItem(CLOAK_KEY, JSON.stringify({ title, favicon }));
+});
+
+document.getElementById("reset-cloak").addEventListener("click", () => {
+  document.title = "Local";
+  document.getElementById("favicon-link").href = "favicon.ico";
+  document.getElementById("cloak-title").value = "";
+  document.getElementById("cloak-favicon").value = "";
+  localStorage.removeItem(CLOAK_KEY);
+});
+
+document.querySelectorAll(".preset-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.getElementById("cloak-title").value = btn.dataset.title;
+    document.getElementById("cloak-favicon").value = btn.dataset.favicon;
+  });
+});
+
+loadCloak();
+
+// ============================
+// SEARCH ENGINE
+// ============================
+
+const SEARCH_KEY = "local-search-engine";
+const searchEngineSelect = document.getElementById("search-engine-select");
+
+function loadSearchEngine() {
+  const saved = localStorage.getItem(SEARCH_KEY);
+  if (saved) {
+    searchEngine.value = saved;
+    searchEngineSelect.value = saved;
+  }
+}
+
+searchEngineSelect.addEventListener("change", () => {
+  searchEngine.value = searchEngineSelect.value;
+  localStorage.setItem(SEARCH_KEY, searchEngineSelect.value);
+});
+
+loadSearchEngine();
+
+// ============================
+// FLOATING TIPS
+// ============================
+
+const TIPS = [
+  "im the goat 🐐","fr fr no cap","stay vibin ✨","W moment 🏆",
+  "lowkey based","sheeeesh 🔥","big brain energy 🧠","understood the assignment",
+  "goated with the sauce 🐐","hits different","certified goat","no cap on top",
+  "main character energy ✨","slay 💅","that's bussin","living rent free 😭",
+  "era unlocked 🔓","ate and left no crumbs","on god fr","we stay winning 🏆",
+  "not me being the GOAT","it's giving","rizz check ✅","lowkey a legend",
+  "W rizz","cooked fr fr","undefeated","real ones know",
+];
+
+const tipsContainer = document.getElementById("floating-tips");
+
+function spawnTip() {
+  const tip = document.createElement("div");
+  tip.className = "floating-tip";
+  tip.textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+  tip.style.left = Math.random() * 78 + 5 + "%";
+  tipsContainer.appendChild(tip);
+  setTimeout(() => tip.remove(), 7500);
+}
+
+setInterval(spawnTip, 4000);
+setTimeout(spawnTip, 1500);
+setTimeout(spawnTip, 3500);
+
+// ============================
+// APPLY SAVED SETTINGS (must be last)
+// ============================
+
+const savedTheme = localStorage.getItem(THEME_KEY) || "snow";
+applyTheme(savedTheme);

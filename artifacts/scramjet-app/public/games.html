@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" data-theme="snow">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games — Local</title>
+  <link id="favicon-link" rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="games.css" />
+  <script src="games.js" defer></script>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+  <div id="floating-tips"></div>
+
+  <header class="games-header">
+    <a href="/" class="back-btn">← Home</a>
+    <div class="games-header-center">
+      <h1 class="games-title">🎮 Games</h1>
+      <p class="games-subtitle">click to play • hover to edit</p>
+    </div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <div class="games-grid" id="games-grid"></div>
+
+  <!-- Game frame overlay -->
+  <div id="game-overlay" class="game-overlay hidden">
+    <div class="game-overlay-bar">
+      <span id="overlay-game-title" class="overlay-title">Game</span>
+      <div class="overlay-actions">
+        <button id="edit-url-btn" class="overlay-btn edit-btn">✏️ Edit URL</button>
+        <button id="game-close-btn" class="overlay-btn close-game-btn">✕ Close</button>
+      </div>
+    </div>
+    <iframe id="game-frame" src="about:blank" allowfullscreen allow="fullscreen"></iframe>
+  </div>
+
+  <!-- Edit URL modal -->
+  <div id="edit-modal" class="edit-modal hidden">
+    <div class="edit-modal-content">
+      <h3>🎮 Set Game URL</h3>
+      <p class="modal-desc">Paste the iframe URL for this game:</p>
+      <input type="text" id="game-url-input" placeholder="https://..." class="modal-input" />
+      <div class="modal-actions">
+        <button id="save-url-btn" class="modal-btn primary">Save & Play</button>
+        <button id="cancel-url-btn" class="modal-btn secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

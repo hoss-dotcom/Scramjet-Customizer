@@ -1,66 +1,120 @@
 <!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
-		<title>Scramjet</title>
+<html lang="en" data-theme="snow">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local</title>
+  <link id="favicon-link" rel="icon" href="favicon.ico" />
+  <script src="/scram/scramjet.all.js"></script>
+  <script src="/baremux/index.js"></script>
+  <link rel="stylesheet" href="index.css" />
+  <script src="register-sw.js" defer></script>
+  <script src="search.js" defer></script>
+  <script src="index.js" defer></script>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+  <div id="floating-tips"></div>
 
-		<link rel="shortcut icon" content="favicon.webp" />
-	
-		<script src="/scram/scramjet.all.js"></script>
-		<script src="/baremux/index.js"></script>
-		
-		<link rel="stylesheet" href="index.css" />
-		<script src="register-sw.js" defer></script>
-		<script src="search.js" defer></script>
-		<script src="index.js" defer></script>
-	</head>
+  <div class="top-bar">
+    <div class="widgets">
+      <div class="clock-widget">
+        <span id="clock-time">00:00:00</span>
+        <span id="clock-date">Mon, Jan 1</span>
+      </div>
+      <div class="weather-widget" id="weather-widget">
+        <span id="weather-icon">🌡️</span>
+        <div class="weather-info">
+          <span id="weather-temp">--°F</span>
+          <span id="weather-desc">Loading...</span>
+        </div>
+      </div>
+    </div>
+    <button class="settings-btn" id="settings-btn" title="Settings">⚙️</button>
+  </div>
 
-	<body>
-		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-			<img class="logo" src="sj.png" alt="Scramjet" />
-			<h1>Scramjet | MW</h1>
-		</div>
-		<div class="flex-center desc left-margin">
-			<p>
-				Scramjet is an experimental interception based web proxy designed to
-				evade internet censorship, bypass arbitrary web browser restrictions and
-				innovate web proxy technologies.
-			</p>
-		</div>
+  <main class="main-content">
+    <h1 class="site-title">Local</h1>
+    <p class="site-subtitle">your space, your web</p>
 
-		<form id="sj-form" class="flex-center">
-			<input
-				id="sj-search-engine"
-				value="https://www.google.com/search?q=%s"
-				type="hidden"
-			/>
-			<input id="sj-address" type="text" placeholder="Search the web freely" />
-		</form>
-		<div class="desc left-margin">
-			<p id="sj-error"></p>
-			<pre id="sj-error-code"></pre>
-		</div>
-		<footer>
-			<div>
-				<a
-					title="The Mercury Workshop GitHub organization"
-					href="https://github.com/MercuryWorkshop"
-					>Mercury Workshop</a
-				>
-				<a
-					title="The example demo app for Scramjet"
-					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
-					>GitHub</a
-				>
-				<a title="License information" href="credits.html">Credits</a>
-			</div>
-			<div>
-				<span>Scramjet &copy; MW 2025</span>
-			</div>
-		</footer>
-	</body>
+    <form id="sj-form" class="search-form">
+      <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input id="sj-address" type="text" placeholder="Search or enter a URL..." autocomplete="off" spellcheck="false" />
+        <button type="submit" class="search-go">Go</button>
+      </div>
+    </form>
+
+    <p id="sj-error" class="error-msg"></p>
+    <pre id="sj-error-code" class="error-code"></pre>
+
+    <div class="nav-buttons">
+      <button class="nav-btn games-btn" onclick="window.location.href='games.html'">
+        <span class="nav-btn-icon">🎮</span>
+        <span class="nav-btn-label">Games</span>
+      </button>
+      <button class="nav-btn music-btn" id="music-btn">
+        <span class="nav-btn-icon">🎵</span>
+        <span class="nav-btn-label">Music</span>
+      </button>
+      <button class="nav-btn movies-btn" id="movies-btn">
+        <span class="nav-btn-icon">🎬</span>
+        <span class="nav-btn-label">Movies</span>
+      </button>
+    </div>
+  </main>
+
+  <div id="settings-overlay" class="settings-overlay hidden">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="close-btn" id="settings-close">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>🎨 Theme</h3>
+        <div class="theme-grid">
+          <button class="theme-btn" data-theme="snow">❄️ Snow</button>
+          <button class="theme-btn" data-theme="neon">⚡ Neon</button>
+          <button class="theme-btn" data-theme="sunset">🌅 Sunset</button>
+          <button class="theme-btn" data-theme="ocean">🌊 Ocean</button>
+          <button class="theme-btn" data-theme="forest">🌿 Forest</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>🥸 Tab Cloak</h3>
+        <p class="settings-desc">Change what your tab looks like</p>
+        <input type="text" id="cloak-title" placeholder='Tab title (e.g., "Google Classroom")' class="settings-input" />
+        <input type="text" id="cloak-favicon" placeholder="Favicon URL (leave blank for none)" class="settings-input" />
+        <div class="settings-row">
+          <button class="action-btn primary" id="apply-cloak">Apply</button>
+          <button class="action-btn secondary" id="reset-cloak">Reset</button>
+        </div>
+        <p class="settings-tip">Quick presets:</p>
+        <div class="cloak-presets">
+          <button class="preset-btn" data-title="Google Classroom" data-favicon="https://www.google.com/favicon.ico">Google Classroom</button>
+          <button class="preset-btn" data-title="Khan Academy" data-favicon="https://www.khanacademy.org/favicon.ico">Khan Academy</button>
+          <button class="preset-btn" data-title="Canvas" data-favicon="https://instructure-uploads.s3.amazonaws.com/icons/canvas_icon.ico">Canvas</button>
+          <button class="preset-btn" data-title="Docs - Google" data-favicon="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">Google Docs</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>🔍 Search Engine</h3>
+        <select class="settings-select" id="search-engine-select">
+          <option value="https://www.google.com/search?q=%s">Google</option>
+          <option value="https://duckduckgo.com/?q=%s">DuckDuckGo</option>
+          <option value="https://search.brave.com/search?q=%s">Brave</option>
+          <option value="https://www.bing.com/search?q=%s">Bing</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="proxy-overlay" class="proxy-overlay hidden">
+    <button class="proxy-close-btn" id="proxy-close">✕ Close</button>
+  </div>
+</body>
 </html>
