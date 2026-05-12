@@ -4,7 +4,7 @@ title = "Local"
 version = "1.0.0"
 
 [[services]]
-localPort = 8080
+localPort = 8081
 name = "Local"
 paths = ["/"]
 
@@ -12,7 +12,7 @@ paths = ["/"]
 run = "node src/index.js"
 
 [services.development.env]
-PORT = "8080"
+PORT = "8081"
 
 [services.production]
 
@@ -20,5 +20,5 @@ PORT = "8080"
 args = ["node", "artifacts/scramjet-app/src/index.js"]
 
 [services.production.run.env]
-PORT = "8080"
+PORT = "8081"
 NODE_ENV = "production"
