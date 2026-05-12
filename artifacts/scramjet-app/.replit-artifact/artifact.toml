@@ -17,7 +17,7 @@ PORT = "8080"
 [services.production]
 
 [services.production.run]
-args = ["node", "src/index.js"]
+args = ["node", "artifacts/scramjet-app/src/index.js"]
 
 [services.production.run.env]
 PORT = "8080"
