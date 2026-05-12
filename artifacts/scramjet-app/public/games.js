@@ -92,15 +92,10 @@ function renderGrid() {
       <button class="game-edit-btn" data-index="${i}">✏️</button>
     `;
 
-    // Click card → play or open edit
+    // Click card → open edit modal
     card.addEventListener("click", (e) => {
       if (e.target.closest(".game-edit-btn")) return;
-      const u = getGameUrls()[i];
-      if (u) {
-        openGame(i, name, u);
-      } else {
-        openEditModal(i);
-      }
+      openEditModal(i);
     });
 
     // Edit button
@@ -112,33 +107,6 @@ function renderGrid() {
     grid.appendChild(card);
   });
 }
-
-// ============================
-// OPEN GAME IN OVERLAY
-// ============================
-
-function openGame(index, name, url) {
-  const overlay = document.getElementById("game-overlay");
-  const frame = document.getElementById("game-frame");
-  const title = document.getElementById("overlay-game-title");
-
-  currentGameIndex = index;
-  title.textContent = name;
-  frame.src = url;
-  overlay.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-}
-
-function closeGame() {
-  const overlay = document.getElementById("game-overlay");
-  const frame = document.getElementById("game-frame");
-  frame.src = "about:blank";
-  overlay.classList.add("hidden");
-  document.body.style.overflow = "";
-  currentGameIndex = null;
-}
-
-document.getElementById("game-close-btn").addEventListener("click", closeGame);
 
 // ============================
 // EDIT URL MODAL
@@ -157,10 +125,6 @@ function closeEditModal() {
   document.getElementById("edit-modal").classList.add("hidden");
 }
 
-document.getElementById("edit-url-btn").addEventListener("click", () => {
-  if (currentGameIndex !== null) openEditModal(currentGameIndex);
-});
-
 document.getElementById("cancel-url-btn").addEventListener("click", closeEditModal);
 
 document.getElementById("save-url-btn").addEventListener("click", () => {
@@ -170,35 +134,12 @@ document.getElementById("save-url-btn").addEventListener("click", () => {
   setGameUrl(currentGameIndex, url);
   renderGrid();
   closeEditModal();
-
-  if (url) {
-    const name = GAME_NAMES[currentGameIndex];
-    // Close existing overlay first if open
-    const overlay = document.getElementById("game-overlay");
-    if (!overlay.classList.contains("hidden")) {
-      document.getElementById("game-frame").src = url;
-      document.getElementById("overlay-game-title").textContent = name;
-    } else {
-      openGame(currentGameIndex, name, url);
-    }
-  }
 });
 
-// Enter key in modal
+// Enter/Escape key in modal
 document.getElementById("game-url-input").addEventListener("keydown", (e) => {
   if (e.key === "Enter") document.getElementById("save-url-btn").click();
   if (e.key === "Escape") closeEditModal();
-});
-
-// Escape key closes overlays
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    if (!document.getElementById("edit-modal").classList.contains("hidden")) {
-      closeEditModal();
-    } else if (!document.getElementById("game-overlay").classList.contains("hidden")) {
-      closeGame();
-    }
-  }
 });
 
 // ============================
