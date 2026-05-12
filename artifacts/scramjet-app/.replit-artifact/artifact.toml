@@ -13,3 +13,12 @@ run = "node src/index.js"
 
 [services.development.env]
 PORT = "8080"
+
+[services.production]
+
+[services.production.run]
+args = ["node", "src/index.js"]
+
+[services.production.run.env]
+PORT = "8080"
+NODE_ENV = "production"
