@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Games — Local</title>
   <link id="favicon-link" rel="icon" href="favicon.ico" />
+  <script src="/scram/scramjet.all.js"></script>
+  <script src="/baremux/index.js"></script>
   <link rel="stylesheet" href="games.css" />
+  <script src="register-sw.js" defer></script>
   <script src="games.js" defer></script>
 </head>
 <body>
@@ -23,13 +26,13 @@
 
   <div class="games-grid" id="games-grid"></div>
 
-  <!-- Game frame overlay -->
+  <!-- Game frame overlay — Scramjet injects the frame dynamically -->
   <div id="game-overlay" class="game-overlay hidden">
     <div class="game-overlay-bar">
       <span id="overlay-game-title" class="overlay-title">Game</span>
       <button id="game-close-btn" class="overlay-btn close-game-btn">✕ Close</button>
     </div>
-    <iframe id="game-frame" src="about:blank" allowfullscreen allow="fullscreen"></iframe>
+    <div id="game-frame-container"></div>
   </div>
 
 </body>
