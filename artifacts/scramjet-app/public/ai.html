@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local — AI</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="ai.css" />
+</head>
+<body data-theme="midnight">
+
+  <div class="top-bar">
+    <div class="widgets">
+      <button class="back-btn" onclick="window.location.href='/'">← Back</button>
+      <span class="page-title">🤖 Local AI</span>
+    </div>
+    <div class="top-bar-actions">
+      <button class="ai-clear-btn" id="ai-clear-btn" title="Clear conversation">🗑 Clear</button>
+      <button class="panic-btn-main" id="panic-btn" title="Panic — Alt+X">🚨</button>
+    </div>
+  </div>
+
+  <div class="ai-root">
+    <div class="ai-messages" id="ai-messages">
+      <div class="ai-welcome">
+        <div class="ai-welcome-icon">🤖</div>
+        <h2 class="ai-welcome-title">Local AI</h2>
+        <p class="ai-welcome-sub">Your personal AI assistant — ask me anything. Homework, code, ideas, or just chat.</p>
+        <div class="ai-suggestion-chips">
+          <button class="ai-chip" data-msg="Explain how the internet works in simple terms">How does the internet work?</button>
+          <button class="ai-chip" data-msg="Write a funny short story about a robot learning to cook">Write a funny story</button>
+          <button class="ai-chip" data-msg="Give me 5 tips for studying more effectively">Study tips</button>
+          <button class="ai-chip" data-msg="What are some cool game ideas I could build?">Game ideas</button>
+        </div>
+      </div>
+    </div>
+    <div class="ai-input-bar">
+      <textarea
+        id="ai-input"
+        class="ai-input"
+        placeholder="Ask anything..."
+        rows="1"
+        maxlength="4000"
+      ></textarea>
+      <button class="ai-send-btn" id="ai-send-btn">↑</button>
+    </div>
+    <p class="ai-disclaimer">Local AI can make mistakes. Verify important info.</p>
+  </div>
+
+  <canvas id="particle-canvas"></canvas>
+  <script src="ai.js"></script>
+</body>
+</html>

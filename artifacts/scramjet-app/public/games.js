@@ -13,6 +13,119 @@ document.documentElement.setAttribute("data-theme", savedTheme);
 
 const GAME_ICONS = ["🎮","👾","🕹️","⚔️","🏆","🎯","🧩","🚀","🐉","⚡","💎","🌟","🔥","🌊","🦅","🤖","🦁","🏹","🎲","🧙"];
 
+// ============================
+// GAME IMAGES — paste image URLs here (one per game, matches order of GAME_NAMES)
+// Leave blank "" to use the emoji icon instead
+// ============================
+
+const GAME_IMAGES = [
+  /* 00 FNAE           */ "",
+  /* 01 Neon Runner    */ "",
+  /* 02 Space Blaster  */ "",
+  /* 03 Dragon Quest   */ "",
+  /* 04 Tower Defense  */ "",
+  /* 05 Puzzle Master  */ "",
+  /* 06 Speed Racer    */ "",
+  /* 07 Zombie Slayer  */ "",
+  /* 08 Castle Siege   */ "",
+  /* 09 Ocean Explorer */ "",
+  /* 10 Sky Warriors   */ "",
+  /* 11 Dungeon Crawlr */ "",
+  /* 12 Battle Royale  */ "",
+  /* 13 Word Wizard    */ "",
+  /* 14 Block Builder  */ "",
+  /* 15 Snake Classic  */ "",
+  /* 16 Pac Arena      */ "",
+  /* 17 Tetris Pro     */ "",
+  /* 18 Flappy Jump    */ "",
+  /* 19 Endless Runner */ "",
+  /* 20 Space Shooter  */ "",
+  /* 21 Alien Attack   */ "",
+  /* 22 Ninja Jump     */ "",
+  /* 23 Fire Escape    */ "",
+  /* 24 Ice Climber    */ "",
+  /* 25 Desert Storm   */ "",
+  /* 26 Jungle Escape  */ "",
+  /* 27 Haunted House  */ "",
+  /* 28 Robot Wars     */ "",
+  /* 29 Star Battle    */ "",
+  /* 30 Pirate Gold    */ "",
+  /* 31 Dino Run       */ "",
+  /* 32 Ski Slope      */ "",
+  /* 33 Bike Race      */ "",
+  /* 34 Car Chase      */ "",
+  /* 35 Tank Battle    */ "",
+  /* 36 Laser Quest    */ "",
+  /* 37 Mind Maze      */ "",
+  /* 38 Color Bomb     */ "",
+  /* 39 Gem Collector  */ "",
+  /* 40 Portal Jump    */ "",
+  /* 41 Gravity Flip   */ "",
+  /* 42 Time Warp      */ "",
+  /* 43 Echo Chamber   */ "",
+  /* 44 Neon Dash      */ "",
+  /* 45 Pixel Wars     */ "",
+  /* 46 Retro Race     */ "",
+  /* 47 Arcade Blitz   */ "",
+  /* 48 Power Surge    */ "",
+  /* 49 Dark Portal    */ "",
+  /* 50 Shadow Runner  */ "",
+  /* 51 Light Speed    */ "",
+  /* 52 Crystal Cave   */ "",
+  /* 53 Lava Leap      */ "",
+  /* 54 Storm Rider    */ "",
+  /* 55 Thunder Strike */ "",
+  /* 56 Void Walker    */ "",
+  /* 57 Nova Blast     */ "",
+  /* 58 Comet Crash    */ "",
+  /* 59 Orbit Shift    */ "",
+  /* 60 Warp Drive     */ "",
+  /* 61 Cyber Chase    */ "",
+  /* 62 Digital Dash   */ "",
+  /* 63 Binary Jump    */ "",
+  /* 64 Code Breaker   */ "",
+  /* 65 Matrix Run     */ "",
+  /* 66 Glitch Hop     */ "",
+  /* 67 Voxel Land     */ "",
+  /* 68 Chunk World    */ "",
+  /* 69 Block Drop     */ "",
+  /* 70 Tower Fall     */ "",
+  /* 71 Ladder Climb   */ "",
+  /* 72 Rope Swing     */ "",
+  /* 73 Wall Jump      */ "",
+  /* 74 Hover Board    */ "",
+  /* 75 Jet Pack       */ "",
+  /* 76 Wing Suit      */ "",
+  /* 77 Base Jump      */ "",
+  /* 78 Free Fall      */ "",
+  /* 79 Deep Dive      */ "",
+  /* 80 Cave Swim      */ "",
+  /* 81 Rock Climb     */ "",
+  /* 82 Peak Rush      */ "",
+  /* 83 Valley Run     */ "",
+  /* 84 River Ride     */ "",
+  /* 85 Wave Surf      */ "",
+  /* 86 Tide Pool      */ "",
+  /* 87 Coral Reef     */ "",
+  /* 88 Reef Race      */ "",
+  /* 89 Shark Dodge    */ "",
+  /* 90 Whale Watch    */ "",
+  /* 91 Dolphin Dive   */ "",
+  /* 92 Sea Cave       */ "",
+  /* 93 Neon Arcade    */ "",
+  /* 94 Star Forge     */ "",
+  /* 95 Ghost Hunt     */ "",
+  /* 96 Witch Run      */ "",
+  /* 97 Wizard Dash    */ "",
+  /* 98 Rune Quest     */ "",
+  /* 99 Dragon Ride    */ "",
+  /* 100 Phoenix Fire  */ "",
+  /* 101 Thunder God   */ "",
+  /* 102 Storm Blade   */ "",
+  /* 103 Moon Race     */ "",
+  /* 104 Sun Sprint    */ "",
+];
+
 const GAME_NAMES = [
   "FNAE","Neon Runner","Space Blaster","Dragon Quest","Tower Defense",
   "Puzzle Master","Speed Racer","Zombie Slayer","Castle Siege","Ocean Explorer",
@@ -172,8 +285,13 @@ function renderGrid() {
     card.style.animationDelay = `${(i % 20) * 0.025}s`;
     card.dataset.index = i;
 
+    const imgUrl = GAME_IMAGES[i] || "";
+    const thumbHtml = imgUrl
+      ? `<div class="game-card-thumb"><img src="${imgUrl}" class="game-card-img" alt="${name}" /></div>`
+      : `<div class="game-card-thumb game-card-thumb-emoji">${icon}</div>`;
+
     card.innerHTML = `
-      <div class="game-card-thumb game-card-thumb-emoji">${icon}</div>
+      ${thumbHtml}
       <div class="game-card-body">
         <div class="game-card-name">${name}</div>
         <div class="game-card-status">${hasUrl ? "▶ Ready to play" : "No URL set"}</div>

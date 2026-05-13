@@ -31,7 +31,7 @@ const fastify = Fastify({
                         })
                         .on("upgrade", (req, socket, head) => {
                                 if (req.url.endsWith("/wisp/")) wisp.routeRequest(req, socket, head);
-                                else if (req.url === "/chat/") chatWss.handleUpgrade(req, socket, head, (ws) => chatWss.emit("connection", ws, req));
+                                else if (req.url.startsWith("/chat")) chatWss.handleUpgrade(req, socket, head, (ws) => chatWss.emit("connection", ws, req));
                                 else socket.end();
                         });
         },
@@ -58,6 +58,65 @@ fastify.register(fastifyStatic, {
         root: baremuxPath,
         prefix: "/baremux/",
         decorateReply: false,
+});
+
+// ============================
+// AI CHAT ENDPOINT
+// ============================
+
+fastify.post("/ai/chat", async (request, reply) => {
+        const { messages } = request.body;
+        if (!Array.isArray(messages)) return reply.code(400).send({ error: "messages required" });
+
+        const baseUrl = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+        const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+
+        if (!baseUrl || !apiKey) return reply.code(503).send({ error: "AI not configured" });
+
+        const systemMessages = [
+                { role: "system", content: "You are Local AI, a friendly and helpful assistant built into the Local web app. Keep responses concise and conversational. You can help with homework, explain concepts, write code, brainstorm ideas, and chat about anything." },
+                ...messages,
+        ];
+
+        reply.raw.setHeader("Content-Type", "text/event-stream");
+        reply.raw.setHeader("Cache-Control", "no-cache");
+        reply.raw.setHeader("Connection", "keep-alive");
+        reply.raw.setHeader("Access-Control-Allow-Origin", "*");
+
+        const res = await fetch(`${baseUrl}/chat/completions`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ model: "gpt-5.1", max_completion_tokens: 2048, messages: systemMessages, stream: true }),
+        });
+
+        if (!res.ok) {
+                reply.raw.write(`data: ${JSON.stringify({ error: "AI error" })}\n\n`);
+                reply.raw.end();
+                return reply;
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buf += decoder.decode(value, { stream: true });
+                const lines = buf.split("\n");
+                buf = lines.pop();
+                for (const line of lines) {
+                        if (!line.startsWith("data: ")) continue;
+                        const data = line.slice(6).trim();
+                        if (data === "[DONE]") { reply.raw.write(`data: ${JSON.stringify({ done: true })}\n\n`); continue; }
+                        try {
+                                const chunk = JSON.parse(data);
+                                const content = chunk.choices?.[0]?.delta?.content;
+                                if (content) reply.raw.write(`data: ${JSON.stringify({ content })}\n\n`);
+                        } catch {}
+                }
+        }
+        reply.raw.end();
+        return reply;
 });
 
 fastify.setNotFoundHandler((res, reply) => {
