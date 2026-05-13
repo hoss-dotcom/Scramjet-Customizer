@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local — Chat</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="chat.css" />
+</head>
+<body data-theme="midnight">
+
+  <div class="top-bar">
+    <div class="widgets">
+      <button class="back-btn" onclick="window.location.href='/'">← Back</button>
+      <span class="page-title">💬 Chat</span>
+    </div>
+    <div class="top-bar-actions">
+      <span class="online-count" id="online-count">● 0 online</span>
+      <button class="panic-btn-main" id="panic-btn" title="Panic — Alt+X">🚨</button>
+    </div>
+  </div>
+
+  <div id="name-modal" class="name-modal-overlay">
+    <div class="name-modal">
+      <div class="name-modal-icon">💬</div>
+      <h2 class="name-modal-title">Join the Chat</h2>
+      <p class="name-modal-sub">Pick a display name to enter the chatroom</p>
+      <input
+        type="text"
+        id="name-input"
+        class="name-modal-input"
+        placeholder="Your display name..."
+        maxlength="24"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="name-modal-error" id="name-error"></div>
+      <button class="name-modal-btn" id="name-join-btn">Enter Chat →</button>
+    </div>
+  </div>
+
+  <div id="chat-root" class="chat-root hidden">
+    <div class="chat-header">
+      <span class="chat-room-label">🌐 Global Room</span>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-loading">Connecting...</div>
+    </div>
+    <div class="chat-input-bar">
+      <input
+        type="text"
+        id="chat-input"
+        class="chat-input"
+        placeholder="Type a message..."
+        maxlength="300"
+        autocomplete="off"
+        spellcheck="true"
+      />
+      <button class="chat-send-btn" id="chat-send-btn">Send</button>
+    </div>
+  </div>
+
+  <canvas id="particle-canvas"></canvas>
+  <script src="chat.js"></script>
+</body>
+</html>
