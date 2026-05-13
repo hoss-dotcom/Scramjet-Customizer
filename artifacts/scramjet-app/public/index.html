@@ -31,7 +31,10 @@
       </div>
     </div>
     <button class="settings-btn" id="settings-btn" title="Settings">⚙️</button>
+    <button class="panic-btn-main" id="panic-btn-main" title="Panic — Alt+X">🚨</button>
   </div>
+
+  <div id="announcement-banner" class="announcement-banner hidden"></div>
 
   <main class="main-content">
     <h1 class="site-title">Local</h1>
@@ -65,6 +68,10 @@
       <button class="nav-btn movies-btn" id="movies-btn">
         <span class="nav-btn-icon">🎬</span>
         <span class="nav-btn-label">Movies</span>
+      </button>
+      <button class="nav-btn devlog-btn" onclick="window.location.href='devlog.html'">
+        <span class="nav-btn-icon">📋</span>
+        <span class="nav-btn-label">Devlog</span>
       </button>
     </div>
   </main>
@@ -113,6 +120,18 @@
           <option value="https://search.brave.com/search?q=%s">Brave</option>
           <option value="https://www.bing.com/search?q=%s">Bing</option>
         </select>
+      </div>
+
+      <div class="settings-section">
+        <h3>🚨 Panic Key</h3>
+        <p class="settings-desc">Press Alt+X to instantly redirect. Set destination:</p>
+        <input type="text" id="panic-url-input" class="settings-input" placeholder="https://classroom.google.com" />
+        <button class="action-btn primary" id="save-panic-url">Save</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>🔐 Admin</h3>
+        <a href="admin.html" class="action-btn secondary" style="display:inline-block;text-decoration:none;text-align:center;">Open Admin Panel</a>
       </div>
     </div>
   </div>

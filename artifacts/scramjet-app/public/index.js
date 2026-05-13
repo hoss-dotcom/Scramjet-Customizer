@@ -394,6 +394,48 @@ function cycleTip() {
 setInterval(cycleTip, 2800);
 
 // ============================
+// PANIC KEY + BUTTON
+// ============================
+
+function panicNow() {
+  const url = localStorage.getItem("local-panic-url") || "https://classroom.google.com";
+  window.location.replace(url);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.altKey && e.key === "x") panicNow();
+});
+
+document.getElementById("panic-btn-main").addEventListener("click", panicNow);
+
+const panicUrlInput = document.getElementById("panic-url-input");
+panicUrlInput.value = localStorage.getItem("local-panic-url") || "";
+document.getElementById("save-panic-url").addEventListener("click", () => {
+  const val = panicUrlInput.value.trim();
+  if (val) localStorage.setItem("local-panic-url", val);
+});
+
+// ============================
+// ANNOUNCEMENTS
+// ============================
+
+function loadAnnouncements() {
+  const banner = document.getElementById("announcement-banner");
+  let anns = [];
+  try { anns = JSON.parse(localStorage.getItem("local-announcements")) || []; } catch {}
+  if (anns.length === 0) { banner.classList.add("hidden"); return; }
+  banner.classList.remove("hidden");
+  banner.innerHTML = anns.map(a => `
+    <div class="announcement-item ann-${a.type}">
+      <span>${a.type === "info" ? "ℹ️" : a.type === "warning" ? "⚠️" : "✅"}</span>
+      <span>${a.text}</span>
+    </div>
+  `).join("");
+}
+
+loadAnnouncements();
+
+// ============================
 // APPLY SAVED SETTINGS (must be last)
 // ============================
 

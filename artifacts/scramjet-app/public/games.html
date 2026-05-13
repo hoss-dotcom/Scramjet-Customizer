@@ -19,10 +19,15 @@
     <a href="/" class="back-btn">← Home</a>
     <div class="games-header-center">
       <h1 class="games-title">🎮 Games</h1>
-      <p class="games-subtitle">click to play • hover to edit</p>
+      <p class="games-subtitle">click to play</p>
     </div>
-    <div class="header-spacer"></div>
+    <button id="panic-btn" class="panic-btn" title="Panic (Alt+X)">🚨</button>
   </header>
+
+  <div class="games-search-bar">
+    <span class="games-search-icon">🔍</span>
+    <input type="text" id="games-search" class="games-search-input" placeholder="Search games..." autocomplete="off" spellcheck="false" />
+  </div>
 
   <div class="games-grid" id="games-grid"></div>
 

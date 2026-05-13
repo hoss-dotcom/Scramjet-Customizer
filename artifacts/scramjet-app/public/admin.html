@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-theme="snow">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Local</title>
+  <link id="favicon-link" rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Password Gate -->
+  <div id="auth-gate" class="auth-gate">
+    <div class="auth-box">
+      <div class="auth-logo">🔐</div>
+      <h2 class="auth-title">Admin Panel</h2>
+      <p class="auth-desc" id="auth-desc">Enter your admin password</p>
+      <input type="password" id="auth-input" class="auth-input" placeholder="Password..." />
+      <button id="auth-btn" class="auth-btn">Enter</button>
+      <p class="auth-err" id="auth-err"></p>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" class="admin-panel hidden">
+    <header class="page-header">
+      <a href="/" class="back-btn">← Home</a>
+      <div class="page-header-center">
+        <h1 class="page-title">⚙️ Admin Panel</h1>
+        <p class="page-subtitle">manage your site</p>
+      </div>
+      <button id="logout-btn" class="back-btn">Logout</button>
+    </header>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="announcements">📢 Announcements</button>
+      <button class="admin-tab" data-tab="devlog">📋 Devlog</button>
+      <button class="admin-tab" data-tab="settings">🔑 Settings</button>
+    </div>
+
+    <!-- Announcements Tab -->
+    <div id="tab-announcements" class="tab-content active">
+      <div class="admin-card">
+        <h3 class="admin-section-title">Post Announcement</h3>
+        <textarea id="ann-text" class="admin-textarea" placeholder="Write your announcement here..."></textarea>
+        <div class="admin-row">
+          <select id="ann-type" class="admin-select">
+            <option value="info">ℹ️ Info</option>
+            <option value="warning">⚠️ Warning</option>
+            <option value="success">✅ Success</option>
+          </select>
+          <button id="ann-post-btn" class="admin-btn primary">Post</button>
+        </div>
+      </div>
+      <div class="admin-card">
+        <h3 class="admin-section-title">Active Announcements</h3>
+        <div id="ann-list" class="ann-list">
+          <p class="admin-empty">No announcements posted.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Devlog Tab -->
+    <div id="tab-devlog" class="tab-content hidden">
+      <div class="admin-card">
+        <h3 class="admin-section-title">New Entry</h3>
+        <input type="text" id="dl-title" class="admin-input" placeholder="Entry title (e.g. v1.2 — New games added)" />
+        <textarea id="dl-content" class="admin-textarea" placeholder="What changed? What was added?"></textarea>
+        <button id="dl-post-btn" class="admin-btn primary">Add Entry</button>
+      </div>
+      <div class="admin-card">
+        <h3 class="admin-section-title">All Entries</h3>
+        <div id="dl-list" class="ann-list">
+          <p class="admin-empty">No devlog entries yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="tab-settings" class="tab-content hidden">
+      <div class="admin-card">
+        <h3 class="admin-section-title">Change Password</h3>
+        <input type="password" id="new-pass-1" class="admin-input" placeholder="New password" />
+        <input type="password" id="new-pass-2" class="admin-input" placeholder="Confirm new password" />
+        <button id="change-pass-btn" class="admin-btn primary">Update Password</button>
+        <p class="admin-msg" id="pass-msg"></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

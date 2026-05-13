@@ -150,38 +150,112 @@ const GAME_URLS = [
 ];
 
 // ============================
+// GAME IMAGES (localStorage)
+// ============================
+
+const IMG_KEY = "local-game-images";
+
+function getGameImages() { try { return JSON.parse(localStorage.getItem(IMG_KEY)) || {}; } catch { return {}; } }
+function setGameImage(index, dataUrl) {
+  const imgs = getGameImages();
+  imgs[index] = dataUrl;
+  localStorage.setItem(IMG_KEY, JSON.stringify(imgs));
+}
+
+// ============================
 // RENDER GAMES GRID
 // ============================
+
+let searchQuery = "";
 
 function renderGrid() {
   const grid = document.getElementById("games-grid");
   grid.innerHTML = "";
+  const imgs = getGameImages();
+  const q = searchQuery.toLowerCase();
 
   GAME_NAMES.forEach((name, i) => {
+    if (q && !name.toLowerCase().includes(q)) return;
+
     const url = GAME_URLS[i] || "";
     const icon = GAME_ICONS[i % GAME_ICONS.length];
     const hasUrl = !!url;
+    const imgSrc = imgs[i] || "";
 
     const card = document.createElement("div");
     card.className = "game-card" + (hasUrl ? " has-url" : " no-url");
     card.style.animationDelay = `${(i % 20) * 0.025}s`;
     card.dataset.index = i;
 
+    const thumbHtml = imgSrc
+      ? `<div class="game-card-thumb"><img src="${imgSrc}" class="game-card-img" alt="${name}" /></div>`
+      : `<div class="game-card-thumb game-card-thumb-emoji">${icon}</div>`;
+
     card.innerHTML = `
-      <div class="game-card-thumb">${icon}</div>
+      ${thumbHtml}
       <div class="game-card-body">
         <div class="game-card-name">${name}</div>
         <div class="game-card-status">${hasUrl ? "▶ Ready to play" : "No URL set"}</div>
       </div>
+      <button class="game-img-upload-btn" data-index="${i}" title="Upload image">🖼️</button>
+      <input type="file" class="game-img-file-input" data-index="${i}" accept="image/*" style="display:none" />
     `;
 
-    card.addEventListener("click", () => {
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".game-img-upload-btn")) return;
       if (url) openGame(name, url);
+    });
+
+    const uploadBtn = card.querySelector(".game-img-upload-btn");
+    const fileInput = card.querySelector(".game-img-file-input");
+
+    uploadBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setGameImage(i, ev.target.result);
+        renderGrid();
+      };
+      reader.readAsDataURL(file);
     });
 
     grid.appendChild(card);
   });
+
+  if (q && grid.children.length === 0) {
+    grid.innerHTML = `<p class="games-no-results">No games match "${q}"</p>`;
+  }
 }
+
+// ============================
+// SEARCH FILTER
+// ============================
+
+document.getElementById("games-search").addEventListener("input", (e) => {
+  searchQuery = e.target.value;
+  renderGrid();
+});
+
+// ============================
+// PANIC KEY + BUTTON
+// ============================
+
+function panicNow() {
+  const url = localStorage.getItem("local-panic-url") || "https://classroom.google.com";
+  window.location.replace(url);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.altKey && e.key === "x") panicNow();
+});
+
+document.getElementById("panic-btn").addEventListener("click", panicNow);
 
 // ============================
 // GAME OVERLAY (via Scramjet proxy)
