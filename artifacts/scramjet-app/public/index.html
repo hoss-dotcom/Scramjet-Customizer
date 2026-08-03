@@ -140,46 +140,5 @@
     <button class="proxy-close-btn" id="proxy-close">✕ Close</button>
   </div>
 
-  <script>
-    // Weather Logic (Fahrenheit)
-    async function updateWeather() {
-      if (!navigator.geolocation) {
-        document.getElementById('weather-desc').innerText = "Not Supported";
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        try {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-
-          // Requesting Fahrenheit from the API
-          const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`;
-
-          const res = await fetch(url);
-          const data = await res.json();
-          const w = data.current_weather;
-
-          document.getElementById('weather-temp').innerText = `${Math.round(w.temperature)}°F`;
-
-          const codes = {
-            0: ['☀️', 'Clear'], 1: ['🌤️', 'Fair'], 2: ['⛅', 'Partly Cloudy'], 3: ['☁️', 'Overcast'],
-            45: ['🌫️', 'Fog'], 61: ['🌧️', 'Rain'], 71: ['❄️', 'Snow'], 95: ['⛈️', 'Storm']
-          };
-
-          const info = codes[w.weathercode] || ['☁️', 'Cloudy'];
-          document.getElementById('weather-icon').innerText = info[0];
-          document.getElementById('weather-desc').innerText = info[1];
-        } catch (err) {
-          document.getElementById('weather-desc').innerText = "Fetch Error";
-        }
-      }, () => {
-        document.getElementById('weather-desc').innerText = "Location Denied";
-      });
-    }
-
-    updateWeather();
-    setInterval(updateWeather, 1200000);
-  </script>
 </body>
 </html>
