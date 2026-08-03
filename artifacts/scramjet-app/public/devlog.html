@@ -21,8 +21,24 @@
   </header>
 
   <main class="devlog-main">
+
+    <div class="devlog-write-card" id="devlog-write-card">
+      <div class="devlog-write-header">
+        <span class="devlog-write-title">✏️ New Entry</span>
+        <button class="devlog-write-toggle" id="devlog-write-toggle">+ Write</button>
+      </div>
+      <div class="devlog-write-form hidden" id="devlog-write-form">
+        <input id="devlog-title-input" type="text" placeholder="Entry title…" maxlength="80" />
+        <textarea id="devlog-content-input" placeholder="What changed? What did you add or fix?" rows="5"></textarea>
+        <div class="devlog-write-actions">
+          <button class="devlog-cancel-btn" id="devlog-cancel-btn">Cancel</button>
+          <button class="devlog-save-btn" id="devlog-save-btn">Save Entry</button>
+        </div>
+      </div>
+    </div>
+
     <div id="devlog-list" class="devlog-list">
-      <div class="devlog-empty" id="devlog-empty">No entries yet. Check back soon.</div>
+      <div class="devlog-empty" id="devlog-empty">No entries yet. Hit "+ Write" above to add one.</div>
     </div>
   </main>
 </body>

@@ -17,6 +17,8 @@
   --music-glow: #ec4899;
   --movies-glow: #f59e0b;
   --devlog-glow: #22d3ee;
+  --chat-glow: #facc15;
+  --ai-glow: #a78bfa;
   --input-bg: rgba(255,255,255,0.06);
   --overlay-bg: rgba(10,22,40,0.97);
   --particle-color: 137,212,245;
@@ -35,6 +37,8 @@
   --music-glow: #00ffff;
   --movies-glow: #ff0080;
   --devlog-glow: #00ffee;
+  --chat-glow: #ffe066;
+  --ai-glow: #cc88ff;
   --input-bg: rgba(255,0,255,0.08);
   --overlay-bg: rgba(13,0,21,0.97);
   --particle-color: 255,0,255;
@@ -53,6 +57,8 @@
   --music-glow: #ff9a9e;
   --movies-glow: #ffd700;
   --devlog-glow: #22d3ee;
+  --chat-glow: #facc15;
+  --ai-glow: #a78bfa;
   --input-bg: rgba(255,107,53,0.08);
   --overlay-bg: rgba(15,4,8,0.97);
   --particle-color: 255,107,53;
@@ -71,6 +77,8 @@
   --music-glow: #48cae4;
   --movies-glow: #0096c7;
   --devlog-glow: #a78bfa;
+  --chat-glow: #facc15;
+  --ai-glow: #c084fc;
   --input-bg: rgba(0,180,216,0.08);
   --overlay-bg: rgba(0,26,46,0.97);
   --particle-color: 0,180,216;
@@ -89,6 +97,8 @@
   --music-glow: #81c784;
   --movies-glow: #aed581;
   --devlog-glow: #34d399;
+  --chat-glow: #fde047;
+  --ai-glow: #a78bfa;
   --input-bg: rgba(76,175,80,0.08);
   --overlay-bg: rgba(7,26,7,0.97);
   --particle-color: 76,175,80;
@@ -527,6 +537,44 @@ html, body {
 @keyframes devlogGlow {
   0%, 100% { box-shadow: 0 0 12px rgba(34,211,238,0.35); }
   50%       { box-shadow: 0 0 35px rgba(34,211,238,0.7), 0 0 70px rgba(34,211,238,0.2); }
+}
+
+/* Chat button */
+.chat-btn {
+  border-color: rgba(250,204,21,0.35);
+  animation: btnFloat 3s ease-in-out infinite 2s, chatGlow 2.5s ease-in-out infinite 1.8s;
+}
+
+.chat-btn:hover {
+  border-color: var(--chat-glow);
+  box-shadow: 0 0 30px var(--chat-glow), 0 0 70px rgba(250,204,21,0.3), inset 0 0 30px rgba(250,204,21,0.08);
+  background: rgba(250,204,21,0.1);
+  transform: translateY(-10px) scale(1.04);
+  animation: none;
+}
+
+@keyframes chatGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(250,204,21,0.35); }
+  50%       { box-shadow: 0 0 35px rgba(250,204,21,0.7), 0 0 70px rgba(250,204,21,0.2); }
+}
+
+/* AI button */
+.ai-btn {
+  border-color: rgba(167,139,250,0.35);
+  animation: btnFloat 3s ease-in-out infinite 2.5s, aiGlow 2.5s ease-in-out infinite 2.2s;
+}
+
+.ai-btn:hover {
+  border-color: var(--ai-glow);
+  box-shadow: 0 0 30px var(--ai-glow), 0 0 70px rgba(167,139,250,0.3), inset 0 0 30px rgba(167,139,250,0.08);
+  background: rgba(167,139,250,0.1);
+  transform: translateY(-10px) scale(1.04);
+  animation: none;
+}
+
+@keyframes aiGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(167,139,250,0.35); }
+  50%       { box-shadow: 0 0 35px rgba(167,139,250,0.7), 0 0 70px rgba(167,139,250,0.2); }
 }
 
 @keyframes btnFloat {

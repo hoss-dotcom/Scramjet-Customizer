@@ -90,3 +90,54 @@ function renderDevlog() {
 }
 
 renderDevlog();
+
+// ============================
+// WRITE FORM
+// ============================
+
+const writeToggle = document.getElementById("devlog-write-toggle");
+const writeForm   = document.getElementById("devlog-write-form");
+const cancelBtn   = document.getElementById("devlog-cancel-btn");
+const saveBtn     = document.getElementById("devlog-save-btn");
+const titleInput  = document.getElementById("devlog-title-input");
+const contentInput= document.getElementById("devlog-content-input");
+
+writeToggle.addEventListener("click", () => {
+  writeForm.classList.toggle("hidden");
+  if (!writeForm.classList.contains("hidden")) {
+    writeToggle.textContent = "✕ Close";
+    titleInput.focus();
+  } else {
+    writeToggle.textContent = "+ Write";
+  }
+});
+
+cancelBtn.addEventListener("click", () => {
+  writeForm.classList.add("hidden");
+  writeToggle.textContent = "+ Write";
+  titleInput.value = "";
+  contentInput.value = "";
+});
+
+saveBtn.addEventListener("click", () => {
+  const title   = titleInput.value.trim();
+  const content = contentInput.value.trim();
+  if (!title || !content) { return; }
+
+  let entries = [];
+  try { entries = JSON.parse(localStorage.getItem("local-devlog")) || []; } catch {}
+  entries.push({ title, content, timestamp: Date.now() });
+  localStorage.setItem("local-devlog", JSON.stringify(entries));
+
+  titleInput.value = "";
+  contentInput.value = "";
+  writeForm.classList.add("hidden");
+  writeToggle.textContent = "+ Write";
+
+  // Re-render
+  const list  = document.getElementById("devlog-list");
+  const empty = document.getElementById("devlog-empty");
+  list.innerHTML = "";
+  list.appendChild(empty);
+  renderDevlog();
+});
