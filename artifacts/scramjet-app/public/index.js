@@ -221,42 +221,6 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
-// ============================
-// WEATHER
-// ============================
-
-const WMO = {
-  0:["☀️","Clear"],1:["🌤️","Mostly Clear"],2:["⛅","Partly Cloudy"],
-  3:["☁️","Overcast"],45:["🌫️","Foggy"],48:["🌫️","Icy Fog"],
-  51:["🌦️","Light Drizzle"],53:["🌦️","Drizzle"],55:["🌧️","Heavy Drizzle"],
-  61:["🌧️","Light Rain"],63:["🌧️","Rain"],65:["🌧️","Heavy Rain"],
-  71:["🌨️","Light Snow"],73:["🌨️","Snow"],75:["❄️","Heavy Snow"],
-  80:["🌦️","Showers"],81:["🌧️","Heavy Showers"],95:["⛈️","Thunderstorm"],
-  96:["⛈️","Storm w/ Hail"],99:["⛈️","Heavy Storm"],
-};
-
-async function fetchWeather() {
-  try {
-    const locRes = await fetch("https://ipapi.co/json/");
-    const loc = await locRes.json();
-    const { latitude, longitude } = loc;
-    const wRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&temperature_unit=fahrenheit`
-    );
-    const w = await wRes.json();
-    const { temperature_2m, weathercode } = w.current;
-    const info = WMO[weathercode] || ["🌡️", "Unknown"];
-    document.getElementById("weather-icon").textContent = info[0];
-    document.getElementById("weather-temp").textContent = `${Math.round(temperature_2m)}°F`;
-    document.getElementById("weather-desc").textContent = info[1];
-  } catch {
-    document.getElementById("weather-icon").textContent = "🌡️";
-    document.getElementById("weather-desc").textContent = "Unavailable";
-    document.getElementById("weather-temp").textContent = "--°F";
-  }
-}
-
-fetchWeather();
 
 // ============================
 // SETTINGS PANEL

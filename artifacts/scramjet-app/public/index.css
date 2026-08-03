@@ -210,45 +210,6 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-/* Weather */
-.weather-widget {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  padding: 8px 16px;
-  backdrop-filter: blur(10px);
-  transition: all 0.5s;
-}
-
-#weather-icon {
-  font-size: 24px;
-  animation: weatherBob 3s ease-in-out infinite;
-}
-
-@keyframes weatherBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-.weather-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-}
-
-#weather-temp {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-#weather-desc {
-  font-size: 11px;
-  color: var(--text-muted);
-}
 
 /* Settings button */
 .settings-btn {
