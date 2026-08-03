@@ -31,6 +31,29 @@
 
   <div class="games-grid" id="games-grid"></div>
 
+  <!-- Secret games section -->
+  <div class="secret-section">
+    <div class="secret-bar" id="secret-bar">
+      <span class="secret-bar-icon">🔒</span>
+      <span class="secret-bar-label">Secret</span>
+      <span class="secret-bar-hint">···</span>
+    </div>
+    <div class="secret-games-tray hidden" id="secret-games-tray"></div>
+  </div>
+
+  <!-- Secret password modal -->
+  <div class="secret-pw-overlay hidden" id="secret-pw-overlay">
+    <div class="secret-pw-modal">
+      <h3>🔒 Enter password</h3>
+      <input type="password" id="secret-pw-input" placeholder="Password…" autocomplete="off" />
+      <p class="secret-pw-error" id="secret-pw-error"></p>
+      <div class="secret-pw-actions">
+        <button id="secret-pw-cancel">Cancel</button>
+        <button id="secret-pw-submit" class="secret-pw-submit-btn">Unlock</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Game frame overlay — Scramjet injects the frame dynamically -->
   <div id="game-overlay" class="game-overlay hidden">
     <div class="game-overlay-bar">

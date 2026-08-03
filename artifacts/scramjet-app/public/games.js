@@ -268,12 +268,88 @@ const GAME_URLS = [
 
 let searchQuery = "";
 
+// ============================
+// SECRET GAMES — password protected
+// Change this to your own password
+// ============================
+const SECRET_GAME_PASSWORD = "changeme123";
+const SECRET_GAMES = [
+  { name: "FNAE",              url: "https://fnae.n1yshi.dev/",         icon: "🎮" },
+  { name: "Cookie Clicker 2.0", url: "https://epsteinclicker.github.io/", icon: "🍪" },
+];
+// Indices to hide from the main grid (FNAE=0, Cookie Clicker 2.0=2)
+const HIDDEN_INDICES = new Set([0, 2]);
+
+let secretUnlocked = false;
+
+function promptSecretPassword(onSuccess) {
+  const overlay = document.getElementById("secret-pw-overlay");
+  const input   = document.getElementById("secret-pw-input");
+  const err     = document.getElementById("secret-pw-error");
+  overlay.classList.remove("hidden");
+  input.value = "";
+  err.textContent = "";
+  input.focus();
+
+  function attempt() {
+    if (input.value === SECRET_GAME_PASSWORD) {
+      overlay.classList.add("hidden");
+      secretUnlocked = true;
+      onSuccess();
+    } else {
+      err.textContent = "Wrong password.";
+      input.value = "";
+      input.focus();
+    }
+  }
+
+  document.getElementById("secret-pw-submit").onclick = attempt;
+  document.getElementById("secret-pw-cancel").onclick = () => overlay.classList.add("hidden");
+  input.onkeydown = (e) => { if (e.key === "Enter") attempt(); };
+}
+
+function renderSecretSection() {
+  const bar = document.getElementById("secret-bar");
+  bar.addEventListener("click", () => {
+    if (secretUnlocked) {
+      document.getElementById("secret-games-tray").classList.toggle("hidden");
+    } else {
+      promptSecretPassword(() => {
+        document.getElementById("secret-games-tray").classList.remove("hidden");
+      });
+    }
+  });
+
+  const tray = document.getElementById("secret-games-tray");
+  SECRET_GAMES.forEach(({ name, url, icon }) => {
+    const card = document.createElement("div");
+    card.className = "game-card has-url secret-game-card";
+    card.innerHTML = `
+      <div class="game-card-thumb game-card-thumb-emoji">${icon}</div>
+      <div class="game-card-body">
+        <div class="game-card-name">${name}</div>
+        <div class="game-card-status">▶ Ready to play</div>
+      </div>
+    `;
+    card.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (secretUnlocked) {
+        openGame(name, url);
+      } else {
+        promptSecretPassword(() => openGame(name, url));
+      }
+    });
+    tray.appendChild(card);
+  });
+}
+
 function renderGrid() {
   const grid = document.getElementById("games-grid");
   grid.innerHTML = "";
   const q = searchQuery.toLowerCase();
 
   GAME_NAMES.forEach((name, i) => {
+    if (HIDDEN_INDICES.has(i)) return; // pulled into secret section
     if (q && !name.toLowerCase().includes(q)) return;
 
     const url = GAME_URLS[i] || "";
@@ -318,6 +394,8 @@ document.getElementById("games-search").addEventListener("input", (e) => {
   searchQuery = e.target.value;
   renderGrid();
 });
+
+renderSecretSection();
 
 // ============================
 // PANIC KEY + BUTTON
