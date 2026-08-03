@@ -102,12 +102,12 @@ const saveBtn     = document.getElementById("devlog-save-btn");
 const titleInput  = document.getElementById("devlog-title-input");
 const contentInput= document.getElementById("devlog-content-input");
 
+// ============================
+// CHANGE THIS to your own password
+// ============================
+const DEVLOG_PASSWORD = "changeme123";
+
 function promptPin(onSuccess) {
-  const pin = localStorage.getItem("local-devlog-pin");
-  if (!pin) {
-    showPinError("No PIN set. Open Settings on the home page and set a Devlog PIN first.");
-    return;
-  }
   const overlay = document.getElementById("pin-overlay");
   const input   = document.getElementById("pin-input");
   const err     = document.getElementById("pin-error");
@@ -117,11 +117,11 @@ function promptPin(onSuccess) {
   input.focus();
 
   function attempt() {
-    if (input.value === pin) {
+    if (input.value === DEVLOG_PASSWORD) {
       overlay.classList.add("hidden");
       onSuccess();
     } else {
-      err.textContent = "Wrong PIN. Try again.";
+      err.textContent = "Wrong password.";
       input.value = "";
       input.focus();
     }
@@ -130,21 +130,6 @@ function promptPin(onSuccess) {
   document.getElementById("pin-submit").onclick = attempt;
   document.getElementById("pin-cancel").onclick = () => overlay.classList.add("hidden");
   input.onkeydown = (e) => { if (e.key === "Enter") attempt(); };
-}
-
-function showPinError(msg) {
-  const overlay = document.getElementById("pin-overlay");
-  const input   = document.getElementById("pin-input");
-  const err     = document.getElementById("pin-error");
-  overlay.classList.remove("hidden");
-  input.style.display = "none";
-  document.getElementById("pin-submit").style.display = "none";
-  err.textContent = msg;
-  document.getElementById("pin-cancel").onclick = () => {
-    overlay.classList.add("hidden");
-    input.style.display = "";
-    document.getElementById("pin-submit").style.display = "";
-  };
 }
 
 writeToggle.addEventListener("click", () => {

@@ -260,20 +260,6 @@ document.querySelectorAll(".theme-btn").forEach((btn) =>
 );
 
 // ============================
-// DEVLOG PIN
-// ============================
-
-document.getElementById("save-devlog-pin").addEventListener("click", () => {
-  const pin = document.getElementById("devlog-pin-input").value.trim();
-  if (!pin) return;
-  localStorage.setItem("local-devlog-pin", pin);
-  document.getElementById("devlog-pin-input").value = "";
-  const saved = document.getElementById("devlog-pin-saved");
-  saved.style.display = "inline";
-  setTimeout(() => (saved.style.display = "none"), 2000);
-});
-
-// ============================
 // TAB CLOAK
 // ============================
 
