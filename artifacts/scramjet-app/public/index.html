@@ -117,6 +117,22 @@
         <input type="text" id="panic-url-input" class="settings-input" placeholder="https://classroom.google.com" />
         <button class="action-btn primary" id="save-panic-url">Save</button>
       </div>
+      <div class="settings-section">
+        <h3>🖼️ Background</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Paste an image URL or upload a file.</p>
+        <input type="text" id="bg-url-input" class="settings-input" placeholder="https://example.com/image.jpg" />
+        <div class="settings-row" style="margin-top:8px;">
+          <label class="action-btn secondary bg-upload-label">
+            📁 Upload file
+            <input type="file" id="bg-file-input" accept="image/*" style="display:none" />
+          </label>
+          <button class="action-btn primary" id="bg-apply-btn">Apply</button>
+          <button class="action-btn secondary" id="bg-remove-btn">Remove</button>
+        </div>
+        <div id="bg-preview-wrap" style="display:none;margin-top:10px;">
+          <img id="bg-preview-img" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--card-border);" />
+        </div>
+      </div>
     </div>
   </div>
 

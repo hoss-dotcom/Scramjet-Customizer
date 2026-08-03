@@ -194,7 +194,7 @@ document.getElementById("proxy-close").addEventListener("click", closeProxy);
 // ============================
 
 document.getElementById("music-btn").addEventListener("click", async () => {
-  await launchProxy("https://monochrome.tf");
+  await launchProxy("https://open.spotify.com/");
 });
 
 document.getElementById("movies-btn").addEventListener("click", async () => {
@@ -239,6 +239,69 @@ settingsClose.addEventListener("click", () =>
 settingsOverlay.addEventListener("click", (e) => {
   if (e.target === settingsOverlay) settingsOverlay.classList.add("hidden");
 });
+
+// ============================
+// BACKGROUND IMAGE
+// ============================
+
+const BG_KEY = "local-bg-image";
+
+function applyBackground(url) {
+  if (!url) {
+    document.body.style.backgroundImage = "";
+    document.body.classList.remove("has-bg");
+    return;
+  }
+  document.body.style.backgroundImage = `url(${JSON.stringify(url)})`;
+  document.body.classList.add("has-bg");
+}
+
+function loadBackground() {
+  const saved = localStorage.getItem(BG_KEY);
+  if (saved) {
+    applyBackground(saved);
+    document.getElementById("bg-url-input").value = saved.startsWith("data:") ? "" : saved;
+    showBgPreview(saved);
+  }
+}
+
+function showBgPreview(url) {
+  const wrap = document.getElementById("bg-preview-wrap");
+  const img  = document.getElementById("bg-preview-img");
+  img.src = url;
+  wrap.style.display = "block";
+}
+
+document.getElementById("bg-apply-btn").addEventListener("click", () => {
+  const url = document.getElementById("bg-url-input").value.trim();
+  if (!url) return;
+  applyBackground(url);
+  localStorage.setItem(BG_KEY, url);
+  showBgPreview(url);
+});
+
+document.getElementById("bg-remove-btn").addEventListener("click", () => {
+  applyBackground(null);
+  localStorage.removeItem(BG_KEY);
+  document.getElementById("bg-url-input").value = "";
+  document.getElementById("bg-preview-wrap").style.display = "none";
+});
+
+document.getElementById("bg-file-input").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    applyBackground(dataUrl);
+    localStorage.setItem(BG_KEY, dataUrl);
+    showBgPreview(dataUrl);
+    document.getElementById("bg-url-input").value = "";
+  };
+  reader.readAsDataURL(file);
+});
+
+loadBackground();
 
 // ============================
 // THEMES
@@ -333,8 +396,10 @@ loadSearchEngine();
 
 const TIPS = [
   "better then someone elses webstie","bruh moment",
-  "lowkey ","am i friggin tuff","jow mama","oh heck nah mr escobar",
+  "lowkey ","am i friggin tuff","joe mama","oh heck nah mr escobar",
   "locked and loaded dudee","lowkey though",
+  "new school year", "better then US5", "Local serving you since may 2026",
+  "me and da bois with le troll faces",
 ];
 
 // Ticker above buttons

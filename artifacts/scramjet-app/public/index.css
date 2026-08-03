@@ -123,6 +123,29 @@ html, body {
   transition: background 0.6s ease, color 0.3s ease;
 }
 
+/* Custom background image */
+body.has-bg {
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+body.has-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 0;
+  pointer-events: none;
+}
+
+body.has-bg .top-bar,
+body.has-bg .settings-overlay .settings-panel {
+  background: rgba(0, 0, 0, 0.55) !important;
+  backdrop-filter: blur(24px);
+}
+
 /* ================================
    PARTICLE CANVAS
    ================================ */
