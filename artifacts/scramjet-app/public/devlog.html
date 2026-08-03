@@ -20,6 +20,19 @@
     <div class="header-spacer"></div>
   </header>
 
+  <!-- PIN overlay -->
+  <div class="pin-overlay hidden" id="pin-overlay">
+    <div class="pin-modal">
+      <h3>🔒 Enter your PIN</h3>
+      <input type="password" id="pin-input" placeholder="PIN…" autocomplete="off" />
+      <p class="pin-error" id="pin-error"></p>
+      <div class="pin-actions">
+        <button id="pin-cancel">Cancel</button>
+        <button id="pin-submit" class="pin-submit-btn">Unlock</button>
+      </div>
+    </div>
+  </div>
+
   <main class="devlog-main">
 
     <div class="devlog-write-card" id="devlog-write-card">
