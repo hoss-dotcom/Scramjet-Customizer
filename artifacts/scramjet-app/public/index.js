@@ -194,7 +194,7 @@ document.getElementById("proxy-close").addEventListener("click", closeProxy);
 // ============================
 
 document.getElementById("music-btn").addEventListener("click", async () => {
-  await launchProxy("https://open.spotify.com/");
+  await launchProxy("https://bayflix.ms/search/g");
 });
 
 document.getElementById("movies-btn").addEventListener("click", async () => {
