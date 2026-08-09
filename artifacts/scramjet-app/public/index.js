@@ -198,7 +198,7 @@ document.getElementById("music-btn").addEventListener("click", async () => {
 });
 
 document.getElementById("movies-btn").addEventListener("click", async () => {
-  await launchProxy("https://vidbox.vc/");
+  await launchProxy("https://dulo.cx/");
 });
 
 // ============================
