@@ -466,6 +466,23 @@ function loadAnnouncements() {
 loadAnnouncements();
 
 // ============================
+// TYPEWRITER TITLE
+// ============================
+
+const siteTitle = document.getElementById("site-title");
+const titleText = "Local";
+let titleIndex = 0;
+
+function typeSiteTitle() {
+  if (titleIndex >= titleText.length) return;
+  siteTitle.textContent += titleText[titleIndex];
+  titleIndex += 1;
+  setTimeout(typeSiteTitle, 145);
+}
+
+setTimeout(typeSiteTitle, 450);
+
+// ============================
 // APPLY SAVED SETTINGS (must be last)
 // ============================
 

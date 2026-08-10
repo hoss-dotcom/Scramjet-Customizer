@@ -296,6 +296,21 @@ body.has-bg .settings-overlay .settings-panel {
   user-select: none;
 }
 
+.typing-title::after {
+  content: "";
+  display: inline-block;
+  height: 0.78em;
+  margin-left: 0.08em;
+  border-right: 0.06em solid var(--accent);
+  vertical-align: -0.04em;
+  animation: typingCursor 0.8s steps(1, end) infinite;
+}
+
+@keyframes typingCursor {
+  0%, 45% { opacity: 1; }
+  46%, 100% { opacity: 0; }
+}
+
 @keyframes titlePulse {
   0%, 100% { filter: brightness(1) drop-shadow(0 0 0px transparent); }
   50%       { filter: brightness(1.25) drop-shadow(0 0 30px rgba(var(--particle-color), 0.5)); }
