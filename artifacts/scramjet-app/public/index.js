@@ -400,6 +400,7 @@ const TIPS = [
   "locked and loaded dudee","lowkey though",
   "new school year", "better then US5", "Local serving you since may 2026",
   "me and da bois with le troll faces",
+  "10 New Games Every Monday",
 ];
 
 // Ticker above buttons
