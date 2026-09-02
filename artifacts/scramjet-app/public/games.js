@@ -176,7 +176,7 @@ const GAME_URLS = [
   /* 18 Flappy Jump      */ "https://bitstore1612.github.io/g5/class-449",
   /* 19 Endless Runner   */ "https://classroom8.github.io/house-of-hazards/",
   /* 20 Space Shooter    */ "https://bitstore1612.github.io/g26/class-446",
-  /* 21 Alien Attack     */ "https://bitstore1612.github.io/g5/class-533",
+  /* 21 Alien Attack     */ "https://script.google.com/macros/s/AKfycbwHsn7X7mDgpugXiHqqAjQvQCgvg7zf-f1Z1o4rrHnrOmS6EGPVodCyAoNMdA90UXs/exec//",
   /* 22 Ninja Jump       */ "https://rocketgoal.io/",
   /* 23 Fire Escape      */ "https://googleusercontent.b-cdn.net/one/oneup.html",
   /* 24 Ice Climber      */ "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcST-OFaIuf0v2NJGoMLX5upQ9f3IM60yserrUaSA62L8A&s",
