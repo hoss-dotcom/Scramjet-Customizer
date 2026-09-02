@@ -49,7 +49,16 @@ const form = document.getElementById("recommendation-form");
 const list = document.getElementById("recommendation-list");
 const count = document.getElementById("suggestion-count");
 const status = document.getElementById("form-status");
+const cooldownNote = document.getElementById("cooldown-note");
 const submitButton = form.querySelector("button[type='submit']");
+const COOLDOWN_MS = 30_000;
+const COOLDOWN_KEY = "local-recommendation-cooldown-until";
+
+const deleteOverlay = document.getElementById("delete-pw-overlay");
+const deleteInput = document.getElementById("delete-pw-input");
+const deleteError = document.getElementById("delete-pw-error");
+const deleteSubmit = document.getElementById("delete-pw-submit");
+let deleteTargetId = null;
 
 function formatDate(timestamp) {
   return new Date(timestamp).toLocaleDateString("en-US", {
@@ -57,6 +66,15 @@ function formatDate(timestamp) {
     day: "numeric",
     year: "numeric",
   });
+}
+
+function updateCooldown() {
+  const until = Number(localStorage.getItem(COOLDOWN_KEY) || 0);
+  const remaining = Math.max(0, until - Date.now());
+  submitButton.disabled = remaining > 0;
+  cooldownNote.textContent = remaining > 0
+    ? `You can send another suggestion in ${Math.ceil(remaining / 1000)}s.`
+    : "";
 }
 
 function renderRecommendations(items) {
@@ -87,10 +105,63 @@ function renderRecommendations(items) {
     reason.className = "recommendation-reason";
     reason.textContent = item.reason || "No reason included.";
 
-    header.append(name, meta);
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-suggestion-btn";
+    deleteButton.type = "button";
+    deleteButton.textContent = "Delete";
+    deleteButton.title = "Owner password required";
+    deleteButton.addEventListener("click", () => openDeleteModal(item.id));
+
+    const headerMeta = document.createElement("div");
+    headerMeta.className = "recommendation-header-meta";
+    headerMeta.append(meta, deleteButton);
+
+    header.append(name, headerMeta);
     card.append(header, reason);
     list.appendChild(card);
   });
+}
+
+function openDeleteModal(id) {
+  deleteTargetId = id;
+  deleteInput.value = "";
+  deleteError.textContent = "";
+  deleteOverlay.classList.remove("hidden");
+  deleteInput.focus();
+}
+
+function closeDeleteModal() {
+  deleteTargetId = null;
+  deleteOverlay.classList.add("hidden");
+}
+
+async function deleteRecommendation() {
+  if (!deleteTargetId) return;
+  const password = deleteInput.value;
+  if (!password) {
+    deleteError.textContent = "Enter the owner password.";
+    deleteInput.focus();
+    return;
+  }
+
+  deleteSubmit.disabled = true;
+  deleteError.textContent = "";
+  try {
+    const response = await fetch(`/recommendations/${encodeURIComponent(deleteTargetId)}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || "Could not delete suggestion");
+    closeDeleteModal();
+    await loadRecommendations();
+  } catch (error) {
+    deleteError.textContent = error.message;
+    deleteInput.select();
+  } finally {
+    deleteSubmit.disabled = false;
+  }
 }
 
 async function loadRecommendations() {
@@ -124,9 +195,17 @@ form.addEventListener("submit", async (event) => {
     });
     if (!response.ok) {
       const result = await response.json().catch(() => ({}));
+      if (response.status === 429 && result.retryAfter) {
+        localStorage.setItem(
+          COOLDOWN_KEY,
+          String(Date.now() + Number(result.retryAfter) * 1000)
+        );
+        updateCooldown();
+      }
       throw new Error(result.error || "Could not send suggestion");
     }
     form.reset();
+    localStorage.setItem(COOLDOWN_KEY, String(Date.now() + COOLDOWN_MS));
     status.textContent = "Suggestion sent!";
     status.className = "form-status success";
     await loadRecommendations();
@@ -134,13 +213,24 @@ form.addEventListener("submit", async (event) => {
     status.textContent = error.message;
     status.className = "form-status error";
   } finally {
-    submitButton.disabled = false;
+    updateCooldown();
   }
 });
 
 document.getElementById("refresh-btn").addEventListener("click", loadRecommendations);
+document.getElementById("delete-pw-cancel").addEventListener("click", closeDeleteModal);
+deleteSubmit.addEventListener("click", deleteRecommendation);
+deleteInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") deleteRecommendation();
+  if (event.key === "Escape") closeDeleteModal();
+});
+deleteOverlay.addEventListener("click", (event) => {
+  if (event.target === deleteOverlay) closeDeleteModal();
+});
 loadRecommendations();
 setInterval(loadRecommendations, 15000);
+updateCooldown();
+setInterval(updateCooldown, 1000);
 
 document.addEventListener("keydown", (event) => {
   if (event.altKey && event.key.toLowerCase() === "x") {

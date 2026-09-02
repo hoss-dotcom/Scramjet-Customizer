@@ -47,6 +47,7 @@
         </label>
         <div class="form-footer">
           <span id="form-status" class="form-status" aria-live="polite"></span>
+          <span id="cooldown-note" class="cooldown-note" aria-live="polite"></span>
           <button type="submit" class="submit-btn">Send suggestion</button>
         </div>
       </form>
@@ -65,5 +66,18 @@
       </div>
     </section>
   </main>
+
+  <div class="delete-pw-overlay hidden" id="delete-pw-overlay">
+    <div class="delete-pw-modal">
+      <h3>🔒 Owner password</h3>
+      <p>Enter the owner password to delete this suggestion.</p>
+      <input type="password" id="delete-pw-input" placeholder="Password…" autocomplete="off" />
+      <p id="delete-pw-error" class="delete-pw-error" aria-live="polite"></p>
+      <div class="delete-pw-actions">
+        <button id="delete-pw-cancel" type="button">Cancel</button>
+        <button id="delete-pw-submit" class="delete-pw-submit-btn" type="button">Delete</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

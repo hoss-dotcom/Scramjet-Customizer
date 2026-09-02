@@ -15,6 +15,10 @@ import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 const publicPath = fileURLToPath(new URL("../public/", import.meta.url));
 const recommendationsPath = fileURLToPath(new URL("./recommendations.json", import.meta.url));
 let recommendations = [];
+const RECOMMENDATION_COOLDOWN_MS = 30_000;
+const recommendationCooldowns = new Map();
+// Change this value to set the owner password for deleting suggestions.
+const RECOMMENDATIONS_DELETE_PASSWORD = "changeme123";
 
 try {
         recommendations = JSON.parse(await readFile(recommendationsPath, "utf8"));
@@ -150,6 +154,22 @@ fastify.post("/recommendations", async (request, reply) => {
                 return reply.code(400).send({ error: "Game name is required" });
         }
 
+        const forwardedFor = request.headers["x-forwarded-for"];
+        const clientKey = String(
+                Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor || request.ip || "unknown"
+        ).split(",")[0].trim();
+        const now = Date.now();
+        const lastSubmitted = recommendationCooldowns.get(clientKey) || 0;
+        const remainingMs = RECOMMENDATION_COOLDOWN_MS - (now - lastSubmitted);
+
+        if (remainingMs > 0) {
+                const retryAfter = Math.ceil(remainingMs / 1000);
+                return reply
+                        .header("Retry-After", retryAfter)
+                        .code(429)
+                        .send({ error: `Please wait ${retryAfter} seconds before sending another suggestion.`, retryAfter });
+        }
+
         const entry = {
                 id: randomUUID(),
                 name: gameName,
@@ -163,12 +183,38 @@ fastify.post("/recommendations", async (request, reply) => {
 
         try {
                 await writeFile(recommendationsPath, JSON.stringify(recommendations, null, 2));
+                recommendationCooldowns.set(clientKey, now);
         } catch {
                 recommendations.pop();
                 return reply.code(500).send({ error: "Could not save recommendation" });
         }
 
         return reply.code(201).send(entry);
+});
+
+fastify.delete("/recommendations/:id", async (request, reply) => {
+        const body = request.body && typeof request.body === "object" ? request.body : {};
+        const password = String(body.password || "");
+
+        if (password !== RECOMMENDATIONS_DELETE_PASSWORD) {
+                return reply.code(403).send({ error: "Incorrect password" });
+        }
+
+        const id = String(request.params.id || "");
+        const index = recommendations.findIndex((entry) => entry.id === id);
+        if (index === -1) {
+                return reply.code(404).send({ error: "Suggestion not found" });
+        }
+
+        const [removed] = recommendations.splice(index, 1);
+        try {
+                await writeFile(recommendationsPath, JSON.stringify(recommendations, null, 2));
+        } catch {
+                recommendations.splice(index, 0, removed);
+                return reply.code(500).send({ error: "Could not delete suggestion" });
+        }
+
+        return { success: true };
 });
 
 fastify.setNotFoundHandler((res, reply) => {
