@@ -170,7 +170,7 @@ const GAME_URLS = [
   /* 12 Battle Royale    */ "https://irv77.github.io/hd_fnaf/4/",
   /* 13 Word Wizard      */ "https://www.gamegab.com/content/games/race-survival-arena-king/",
   /* 14 Block Builder    */ "https://oto-3-nter.vercel.app/",
-  /* 15 Snake Classic    */ "https://smashkarts.io/",
+  /* 15 Snake Classic    */ "https://script.google.com/macros/s/AKfycbyE1C_kxeomVoOLjpaXc2uAI7JdNgVhdQdePTZu9Sizwzj_imhaWnNmPSXm4w1v-SFs/exec",
   /* 16 Pac Arena        */ "https://bitstore1612.github.io/g26/class-528",
   /* 17 Tetris Pro       */ "https://bitstore1612.github.io/g5/class-472",
   /* 18 Flappy Jump      */ "https://bitstore1612.github.io/g5/class-449",
