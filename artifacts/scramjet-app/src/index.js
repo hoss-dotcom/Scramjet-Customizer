@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import { fileURLToPath } from "url";
 import { hostname } from "node:os";
+import { readFile, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { server as wisp, logging } from "@mercuryworkshop/wisp-js/server";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
@@ -11,6 +13,15 @@ import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 
 const publicPath = fileURLToPath(new URL("../public/", import.meta.url));
+const recommendationsPath = fileURLToPath(new URL("./recommendations.json", import.meta.url));
+let recommendations = [];
+
+try {
+        recommendations = JSON.parse(await readFile(recommendationsPath, "utf8"));
+        if (!Array.isArray(recommendations)) recommendations = [];
+} catch {
+        recommendations = [];
+}
 
 // Wisp Configuration: Refer to the documentation at https://www.npmjs.com/package/@mercuryworkshop/wisp-js
 
@@ -117,6 +128,47 @@ fastify.post("/ai/chat", async (request, reply) => {
         }
         reply.raw.end();
         return reply;
+});
+
+// ============================
+// GAME RECOMMENDATIONS
+// ============================
+
+fastify.get("/recommendations", async () => {
+        return recommendations
+                .slice()
+                .sort((a, b) => b.timestamp - a.timestamp);
+});
+
+fastify.post("/recommendations", async (request, reply) => {
+        const body = request.body && typeof request.body === "object" ? request.body : {};
+        const gameName = String(body.name || "").trim().slice(0, 80);
+        const reason = String(body.reason || "").trim().slice(0, 300);
+        const submittedBy = String(body.submittedBy || "Anonymous").trim().slice(0, 32) || "Anonymous";
+
+        if (!gameName) {
+                return reply.code(400).send({ error: "Game name is required" });
+        }
+
+        const entry = {
+                id: randomUUID(),
+                name: gameName,
+                reason,
+                submittedBy,
+                timestamp: Date.now(),
+        };
+
+        recommendations.push(entry);
+        if (recommendations.length > 500) recommendations = recommendations.slice(-500);
+
+        try {
+                await writeFile(recommendationsPath, JSON.stringify(recommendations, null, 2));
+        } catch {
+                recommendations.pop();
+                return reply.code(500).send({ error: "Could not save recommendation" });
+        }
+
+        return reply.code(201).send(entry);
 });
 
 fastify.setNotFoundHandler((res, reply) => {

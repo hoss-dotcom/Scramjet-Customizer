@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-theme="snow">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Recommendations — Local</title>
+  <link id="favicon-link" rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="recommendations.css" />
+  <script src="recommendations.js" defer></script>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+
+  <header class="page-header">
+    <a href="/" class="back-btn">← Home</a>
+    <div class="page-header-center">
+      <h1 class="page-title">💡 Game Ideas</h1>
+      <p class="page-subtitle">tell us what to add next</p>
+    </div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <main class="recommendations-main">
+    <section class="recommend-write-card">
+      <div class="write-heading">
+        <div>
+          <h2>What should we play next?</h2>
+          <p>Suggest a game for Local. Your idea will be shared with everyone.</p>
+        </div>
+        <span class="write-icon">🎮</span>
+      </div>
+
+      <form id="recommendation-form" class="recommendation-form">
+        <div class="form-row">
+          <label>
+            Game name
+            <input id="game-name" type="text" maxlength="80" placeholder="e.g. Minecraft" required />
+          </label>
+          <label>
+            Your name <span>(optional)</span>
+            <input id="submitted-by" type="text" maxlength="32" placeholder="Anonymous" />
+          </label>
+        </div>
+        <label>
+          Why should we add it? <span>(optional)</span>
+          <textarea id="game-reason" maxlength="300" rows="4" placeholder="Tell everyone why this game would be fun…"></textarea>
+        </label>
+        <div class="form-footer">
+          <span id="form-status" class="form-status" aria-live="polite"></span>
+          <button type="submit" class="submit-btn">Send suggestion</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="suggestions-section">
+      <div class="section-heading">
+        <div>
+          <h2>Community suggestions</h2>
+          <p id="suggestion-count">Loading ideas…</p>
+        </div>
+        <button id="refresh-btn" class="refresh-btn" type="button">↻ Refresh</button>
+      </div>
+      <div id="recommendation-list" class="recommendation-list">
+        <div class="list-message">Loading suggestions…</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
